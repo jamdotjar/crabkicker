@@ -1,0 +1,48 @@
+[gd_scene load_steps=9 format=3 uid="uid://br130v06suos2"]
+
+[ext_resource type="Script" uid="uid://db1a3nd0j6lhw" path="res://entities/player/player.gd" id="1_bls4j"]
+[ext_resource type="Script" uid="uid://bpgm8h524a08h" path="res://entities/player/state_machine.gd" id="2_fkugw"]
+[ext_resource type="Script" uid="uid://7m5scytw7lg3" path="res://entities/player/states/walk.gd" id="3_8fjmc"]
+[ext_resource type="Script" uid="uid://ghdryfrc7lym" path="res://entities/player/states/idle.gd" id="4_qiwj3"]
+[ext_resource type="Script" uid="uid://c0oytg4hddqel" path="res://entities/player/states/jump.gd" id="5_fkugw"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dp5ym"]
+albedo_color = Color(0.699917, 0.41524, 0.12469, 1)
+roughness_texture_channel = 1
+
+[sub_resource type="BoxMesh" id="BoxMesh_u1sro"]
+material = SubResource("StandardMaterial3D_dp5ym")
+size = Vector3(1, 2, 1)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_2qmnm"]
+
+[node name="Player" type="CharacterBody3D"]
+script = ExtResource("1_bls4j")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_u1sro")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_2qmnm")
+
+[node name="stateMachine" type="Node" parent="." node_paths=PackedStringArray("starting_state")]
+script = ExtResource("2_fkugw")
+starting_state = NodePath("idle")
+
+[node name="walk" type="Node" parent="stateMachine" node_paths=PackedStringArray("idle_state", "jump_state")]
+script = ExtResource("3_8fjmc")
+idle_state = NodePath("../idle")
+jump_state = NodePath("../jump")
+
+[node name="idle" type="Node" parent="stateMachine" node_paths=PackedStringArray("walk_state", "jump_state")]
+script = ExtResource("4_qiwj3")
+walk_state = NodePath("../walk")
+jump_state = NodePath("../jump")
+
+[node name="jump" type="Node" parent="stateMachine" node_paths=PackedStringArray("idle_state", "walk_state")]
+script = ExtResource("5_fkugw")
+idle_state = NodePath("../idle")
+walk_state = NodePath("../walk")
+jump_force = 4.0
+move_speed = 7.0
+metadata/_custom_type_script = "uid://7lm8jc58blws"
